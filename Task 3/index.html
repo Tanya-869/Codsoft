@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Scientific Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .calculator {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .calculator:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+        .btn {
+            transition: all 0.2s ease;
+            transform: translateY(0);
+        }
+        .btn:active {
+            transform: translateY(2px);
+        }
+        .display {
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+        .trig-btn {
+            font-size: 0.8rem;
+        }
+        @media (max-width: 640px) {
+            .trig-btn {
+                font-size: 0.7rem;
+                padding: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen flex items-center justify-center p-4">
+    <div class="calculator bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+        <!-- Display Section -->
+        <div class="display bg-gray-700 rounded-xl p-4 mb-6 text-right">
+            <div id="history" class="text-gray-400 text-sm h-5 overflow-hidden"></div>
+            <div id="result" class="text-white text-3xl font-semibold truncate">0</div>
+        </div>
+        
+        <!-- Memory and Advanced Functions Row -->
+        <div class="grid grid-cols-5 gap-2 mb-2">
+            <button onclick="memoryRecall()" class="btn bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">MR</button>
+            <button onclick="memoryClear()" class="btn bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">MC</button>
+            <button onclick="memoryAdd()" class="btn bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">M+</button>
+            <button onclick="memorySubtract()" class="btn bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">M-</button>
+            <button onclick="clearAll()" class="btn bg-red-600 hover:bg-red-700 text-white rounded-lg p-2">AC</button>
+        </div>
+        
+        <!-- Trigonometric Functions Row -->
+        <div class="grid grid-cols-5 gap-2 mb-2">
+            <button onclick="calculateTrig('sin')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">sin</button>
+            <button onclick="calculateTrig('cos')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">cos</button>
+            <button onclick="calculateTrig('tan')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">tan</button>
+            <button onclick="calculateTrig('asin')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">sin⁻¹</button>
+            <button onclick="calculateTrig('acos')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">cos⁻¹</button>
+        </div>
+        
+        <!-- Second Trigonometric Row -->
+        <div class="grid grid-cols-5 gap-2 mb-2">
+            <button onclick="calculateTrig('atan')" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">tan⁻¹</button>
+            <button onclick="calculateLog()" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">log</button>
+            <button onclick="calculateLn()" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">ln</button>
+            <button onclick="calculateExp()" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">eˣ</button>
+            <button onclick="calculatePow(10)" class="trig-btn btn bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-1">10ˣ</button>
+        </div>
+        
+        <!-- Main Calculator Buttons -->
+        <div class="grid grid-cols-4 gap-2">
+            <button onclick="appendToResult('7')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">7</button>
+            <button onclick="appendToResult('8')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">8</button>
+            <button onclick="appendToResult('9')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">9</button>
+            <button onclick="appendOperator('/')" class="btn bg-amber-600 hover:bg-amber-500 text-white rounded-lg p-4 text-xl">÷</button>
+            
+            <button onclick="appendToResult('4')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">4</button>
+            <button onclick="appendToResult('5')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">5</button>
+            <button onclick="appendToResult('6')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">6</button>
+            <button onclick="appendOperator('*')" class="btn bg-amber-600 hover:bg-amber-500 text-white rounded-lg p-4 text-xl">×</button>
+            
+            <button onclick="appendToResult('1')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">1</button>
+            <button onclick="appendToResult('2')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">2</button>
+            <button onclick="appendToResult('3')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">3</button>
+            <button onclick="appendOperator('-')" class="btn bg-amber-600 hover:bg-amber-500 text-white rounded-lg p-4 text-xl">−</button>
+            
+            <button onclick="appendToResult('0')" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">0</button>
+            <button onclick="appendDecimal()" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl">.</button>
+            <button onclick="deleteLastChar()" class="btn bg-gray-600 hover:bg-gray-500 text-white rounded-lg p-4 text-xl"><i class="fas fa-backspace"></i></button>
+            <button onclick="appendOperator('+')" class="btn bg-amber-600 hover:bg-amber-500 text-white rounded-lg p-4 text-xl">+</button>
+            
+            <button onclick="toggleSign()" class="btn bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-4 text-xl">±</button>
+            <button onclick="calculatePercentage()" class="btn bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-4 text-xl">%</button>
+            <button onclick="calculateSqrt()" class="btn bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-4 text-xl">√</button>
+            <button onclick="calculateResult()" class="btn bg-green-600 hover:bg-green-500 text-white rounded-lg p-4 text-xl">=</button>
+        </div>
+        
+        <!-- Additional Functions -->
+        <div class="grid grid-cols-3 gap-2 mt-2">
+            <button onclick="calculatePow(2)" class="btn bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg p-2">x²</button>
+            <button onclick="calculatePow(3)" class="btn bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg p-2">x³</button>
+            <button onclick="calculatePow('y')" class="btn bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg p-2">xʸ</button>
+        </div>
+        
+        <!-- Constants -->
+        <div class="grid grid-cols-2 gap-2 mt-2">
+            <button onclick="appendToResult(Math.PI.toFixed(8))" class="btn bg-teal-600 hover:bg-teal-500 text-white rounded-lg p-2">π</button>
+            <button onclick="appendToResult(Math.E.toFixed(8))" class="btn bg-teal-600 hover:bg-teal-500 text-white rounded-lg p-2">e</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '0';
+        let previousInput = '';
+        let operation = null;
+        let resetInput = false;
+        let memoryValue = 0;
+        
+        const resultElement = document.getElementById('result');
+        const historyElement = document.getElementById('history');
+        
+        function updateDisplay() {
+            resultElement.textContent = currentInput;
+            historyElement.textContent = previousInput + (operation ? ' ' + operation : '');
+        }
+        
+        function appendToResult(value) {
+            if (currentInput === '0' || resetInput) {
+                currentInput = value;
+                resetInput = false;
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+        
+        function appendDecimal() {
+            if (resetInput) {
+                currentInput = '0.';
+                resetInput = false;
+            } else if (!currentInput.includes('.')) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+        
+        function appendOperator(op) {
+            if (operation !== null) calculateResult();
+            previousInput = currentInput;
+            operation = op;
+            resetInput = true;
+            updateDisplay();
+        }
+        
+        function calculateResult() {
+            let computation;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            
+            if (isNaN(prev) || isNaN(current)) return;
+            
+            switch (operation) {
+                case '+':
+                    computation = prev + current;
+                    break;
+                case '-':
+                    computation = prev - current;
+                    break;
+                case '*':
+                    computation = prev * current;
+                    break;
+                case '/':
+                    computation = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            
+            currentInput = computation.toString();
+            operation = null;
+            previousInput = '';
+            resetInput = true;
+            updateDisplay();
+        }
+        
+        function clearAll() {
+            currentInput = '0';
+            previousInput = '';
+            operation = null;
+            updateDisplay();
+        }
+        
+        function deleteLastChar() {
+            if (currentInput.length === 1 || (currentInput.length === 2 && currentInput.startsWith('-'))) {
+                currentInput = '0';
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateDisplay();
+        }
+        
+        function toggleSign() {
+            currentInput = (parseFloat(currentInput) * -1).toString();
+            updateDisplay();
+        }
+        
+        function calculatePercentage() {
+            currentInput = (parseFloat(currentInput) / 100).toString();
+            updateDisplay();
+        }
+        
+        function calculateSqrt() {
+            currentInput = Math.sqrt(parseFloat(currentInput)).toString();
+            updateDisplay();
+        }
+        
+        function calculateTrig(func) {
+            let value = parseFloat(currentInput);
+            let result;
+            
+            switch (func) {
+                case 'sin':
+                    result = Math.sin(value);
+                    break;
+                case 'cos':
+                    result = Math.cos(value);
+                    break;
+                case 'tan':
+                    result = Math.tan(value);
+                    break;
+                case 'asin':
+                    result = Math.asin(value);
+                    break;
+                case 'acos':
+                    result = Math.acos(value);
+                    break;
+                case 'atan':
+                    result = Math.atan(value);
+                    break;
+                default:
+                    return;
+            }
+            
+            currentInput = result.toString();
+            updateDisplay();
+        }
+        
+        function calculateLog() {
+            currentInput = Math.log10(parseFloat(currentInput)).toString();
+            updateDisplay();
+        }
+        
+        function calculateLn() {
+            currentInput = Math.log(parseFloat(currentInput)).toString();
+            updateDisplay();
+        }
+        
+        function calculateExp() {
+            currentInput = Math.exp(parseFloat(currentInput)).toString();
+            updateDisplay();
+        }
+        
+        function calculatePow(power) {
+            if (power === 'y') {
+                if (operation !== null) calculateResult();
+                previousInput = currentInput;
+                operation = '^';
+                resetInput = true;
+                updateDisplay();
+            } else {
+                currentInput = Math.pow(parseFloat(currentInput), power).toString();
+                updateDisplay();
+            }
+        }
+        
+        // Memory functions
+        function memoryRecall() {
+            currentInput = memoryValue.toString();
+            updateDisplay();
+        }
+        
+        function memoryClear() {
+            memoryValue = 0;
+        }
+        
+        function memoryAdd() {
+            memoryValue += parseFloat(currentInput);
+        }
+        
+        function memorySubtract() {
+            memoryValue -= parseFloat(currentInput);
+        }
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
